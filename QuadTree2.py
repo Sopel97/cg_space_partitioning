@@ -59,18 +59,33 @@ class QuadTree2:
 
             self.points = None
 
-        def query_range(self, rect):
-            if self.points is not None:
-                if self.bounds.contains_rect(rect):
-                    return self.points
-                else:
-                    return [p for p in self.points if rect.contains_point(p)]
+        def _collect_points(self, out):
+            if self.points is None:
+                self.north_west._collect_points(out)
+                self.north_east._collect_points(out)
+                self.south_west._collect_points(out)
+                self.south_east._collect_points(out)
             else:
-                return \
-                    self.north_west.query_range(rect) + \
-                    self.north_east.query_range(rect) + \
-                    self.south_west.query_range(rect) + \
-                    self.south_east.query_range(rect)
+                out += self.points
+
+        def _collect_points_from_range(self, rect, out):
+            if self.bounds.contains_rect(rect):
+                self._collect_points(self, out)
+            elif self.bounds.intersects_rect(rect):
+                if self.points is None:
+                    self.north_west._collect_points_from_range(rect, out)
+                    self.north_east._collect_points_from_range(rect, out)
+                    self.south_west._collect_points_from_range(rect, out)
+                    self.south_east._collect_points_from_range(rect, out)
+                else:
+                    for p in self.points:
+                        if rect.contains_point(p):
+                            out.append(p)
+
+        def query_range(self, rect):
+            points = []
+            self._collect_points_from_range(rect, points)
+            return points
 
         def print(self):
             if self.points is not None:
