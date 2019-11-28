@@ -69,8 +69,8 @@ class QuadTree2:
                 out += self.points
 
         def _collect_points_from_range(self, rect, out):
-            if self.bounds.contains_rect(rect):
-                self._collect_points(self, out)
+            if rect.contains_rect(self.bounds):
+                self._collect_points(out)
             elif self.bounds.intersects_rect(rect):
                 if self.points is None:
                     self.north_west._collect_points_from_range(rect, out)
