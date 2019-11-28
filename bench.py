@@ -102,4 +102,4 @@ def bench(cls, num_queries):
 
 
 if __name__ == '__main__':
-    bench(QuadTree2, 16)
+    bench(QuadTree2, 64)
